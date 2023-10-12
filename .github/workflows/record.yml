@@ -1,0 +1,46 @@
+name: record
+
+on: [push]
+
+jobs:
+  ffmpeg:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Start Selenium containers
+        run: |
+          mkdir -p ./tmp/ffmpeg-videos
+          docker network create grid
+          docker run -d -p 7080:5000 --net grid --name app gprestes/the-internet
+          docker run -d -p 4444:4444 -p 6900:5900 --net grid --name selenium --shm-size="2g" selenium/standalone-chrome:4.16.1-20231212
+          docker run -d --net grid --name video -v ./tmp/ffmpeg-videos:/videos selenium/video:ffmpeg-6.1-20231212
+
+      - name: Run plain test scenario
+        run: npm run run-scenario plainCommandSequence
+        env:
+          WITH_SELENIUM_GRID: "true"
+
+      - name: Stop Selenium containers
+        run: |
+          docker stop video && docker rm video
+          docker stop selenium && docker rm selenium
+          docker stop app && docker rm app
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: recorded-video
+          path: tmp
+          if-no-files-found: ignore
