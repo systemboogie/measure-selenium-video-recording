@@ -1,0 +1,23 @@
+diff --git a/node_modules/selenium-webdriver/devtools/CDPConnection.js b/node_modules/selenium-webdriver/devtools/CDPConnection.js
+index 0440c62..03a054e 100755
+--- a/node_modules/selenium-webdriver/devtools/CDPConnection.js
++++ b/node_modules/selenium-webdriver/devtools/CDPConnection.js
+@@ -26,6 +26,18 @@ class CDPConnection {
+     this.sessionId = null
+   }
+ 
++  // This is a dangerous approach.
++  // See https://github.com/SeleniumHQ/selenium/issues/12017
++  // Still, I wanted to show how one could do it.
++  addListener(event, callback) {
++    this._wsConnection.on('message', (data) => {
++      const payload = JSON.parse(data);
++      if (payload.method === event) {
++        callback(payload)
++      }
++    })
++  }
++
+   execute(method, params, callback) {
+     let message = {
+       method,

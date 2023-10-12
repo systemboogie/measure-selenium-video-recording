@@ -1,0 +1,49 @@
+name: stitch
+
+on: [push]
+
+jobs:
+  approach:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        scenario:
+          [
+            plainCommandSequence,
+            withScreencastCdp,
+            withProxiedExecutorTakescreenshot,
+            withProxiedExecutorBidiCaptureScreenshot,
+            withProxiedExecutorCdpScreenshot,
+          ]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm install
+
+      - run: |
+          docker pull gprestes/the-internet
+          docker run -d -p 7080:5000 gprestes/the-internet
+
+      - name: Run scenarios
+        run: npm run run-scenario ${{ matrix.scenario }}
+
+      - name: Create video from single screenshots
+        run: |
+          npm run create-video ${{ matrix.scenario }}
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: stitched-video
+          path: tmp
+          if-no-files-found: ignore
