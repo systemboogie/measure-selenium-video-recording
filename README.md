@@ -19,12 +19,15 @@ For the second approach, I tried different implementations:
   - 2c) WebDriver BiDi `captureScreenshot()`
   - 2d) WebDriver `takeScreenshot()`
 
-The workflow summaries in this project show execution times and contain the
-produced screenshots and videos.
+With each commit to this repository, workflows run each of the implementations 4
+times. Each workflow summary displays the timings. Some examples:
 
-Whenever running [this workflow](./.github/workflows/ci.yml), each
-implementation runs several times. You can find the results in the respective
-workflow summary.
+- For the ffmpeg implementation (1):
+  [link](https://github.com/systemboogie/measure-selenium-video-recording/actions/runs/7466908766#summary-20319306235)
+- For the other implementations (2a, 2b, 2c, 2d):
+  [link](https://github.com/systemboogie/measure-selenium-video-recording/actions/runs/7466908763#summary-20319306229)
+
+The workflow summaries also contain the screenshots and videos produced.
 
 ## Why?
 
@@ -37,17 +40,24 @@ played around with other methods of creating a series of screenshots.
 
 ## Measurements
 
-Recording a video via _ffmpeg_ (1) adds only a little to the test execution
-time. It is less time-consuming than all approaches that create a series of
-screenshots. Close behind comes the CDP screencast implementation (2a). Of all
-the "create-video-by-stitching-screenshots" approaches (2b, 2c, 2d), the one
-using Chrome Devtools Protocol commands (2b) is the clear winner.
+GitHub deletes workflow data after a while (not sure about the summaries).
+Therefore I decided to put some of the timings here in this readme file.
+
+The results:
+
+- Recording a video via _ffmpeg_ (1) does not add considerably to the test
+  execution time. It is less time-consuming than all approaches that create a
+  series of screenshots
+- The same is true for the CDP screencast implementation (2a)
+- The "proxied executor" implementations (2b, 2c, 2d) all add considerably to
+  the timings, especially the one that uses the BiDi screenshot command. Using
+  the CDP screenshot command seems to be the fastest option
 
 The timings shown below are in milliseconds.
 
 | Implementation                                  | Run 1 | Run 2 | Run 3 | Run 4 |
 | ----------------------------------------------- | ----- | ----- | ----- | ----- |
-| Plain command sequence                          | 4155  | 4030  | 4088  | 4080  |
+| Plain command sequence (no screenshots/video)   | 4155  | 4030  | 4088  | 4080  |
 | 1) Record video with _ffmpeg_ at runtime        | 4140  | 4008  | 3928  | 3946  |
 | 2a) CDP screencast                              | 4083  | 3939  | 3983  | 3951  |
 | 2b) Proxied executor + CDP screenshot           | 4903  | 4585  | 4557  | 4510  |
