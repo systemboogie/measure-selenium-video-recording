@@ -17,7 +17,7 @@
     "eslint": "^8.56.0",
     "ffmpeg-static": "^5.1.0",
     "patch-package": "^8.0.0",
-    "prettier": "^3.2.4",
+    "prettier": "^3.2.5",
     "selenium-webdriver": "^4.17.0"
   }
 }
