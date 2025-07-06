@@ -39,7 +39,7 @@ jobs:
           docker stop app && docker rm app
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: recorded-video
           path: tmp
