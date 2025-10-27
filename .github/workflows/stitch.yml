@@ -42,7 +42,7 @@ jobs:
           npm run create-video ${{ matrix.scenario }}
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: stitched-video-${{ matrix.scenario }}
           path: tmp
